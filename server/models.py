@@ -14,6 +14,14 @@ class Restaurant(db.Model, SerializerMixin):
 
     foods_at_restaurant = db.relationship('FoodAtRestaurant', back_populates = 'restaurant', cascade = 'all,delete')
 
+    # validation of name column for restaurants table
+    @validates("name")
+    def validate_name(self, key, value):
+        if len(value) >= 25:
+            raise ValueError # raises error if inputted name is too long
+        else:
+            return value
+
 class Food(db.Model, SerializerMixin):
     __tablename__ = "foods"
 
@@ -37,3 +45,10 @@ class FoodAtRestaurant(db.Model, SerializerMixin):
 
     restaurant = db.relationship('Restaurant', back_populates = 'foods_at_restaurant')
     food = db.relationship('Food', back_populates = 'restaurants_with_food')
+
+    @validates("price")
+    def validate_price(self, key, value):
+        if value <= 0:
+            raise ValueError
+        else:
+            return value
